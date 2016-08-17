@@ -120,21 +120,32 @@ function maj_en_cours(o)
 		name = x.radio[i].name
 		value = x.radio[i].value
 		if(value != ""){
-			$("[name="+name+"][value="+value+"]").prop('checked', true);
-//
-//			$("[name="+name+"][value="+value+"]").parent().parent().show();
-//			$("[name="+name+"][value="+value+"]").parent().parent().parent().show();
+			if(name == "id_statut_sub_user"){
+				switch (value){
+					case "1":
+					case "2":
+					case "3":
+					case "4":
+					case "12":
+					default:
+						name = "radioPersonnel"
+						$('#divPersonnelSub').show()
+						break; 
+					case "5":
+					case "6":
+					case "7":
+						name = "radioApprenti"
+						$('#divApprentiSub').show()
+						break;
+					case "8":
+					case "9":
+					case "10":
+					case "11":
+						name = "radioEtudiant"
+						$('#divEtudiantSub').show()
+			}
 		}
-//		if($('input[type=radio][name=radioPersonnel]:checked').length == 1) $('#divPersonnelSub').show()
-//		if(test = $('input[type=radio][name=radioPersonnel]:checked').length == 1) alert(test)
-
-//		if($('input[type=radio][name=radioApprenti]:checked').length == 1) $('#divApprentiSub').show()
-//		if($('input[type=radio][name=radioPersonnel]:checked').length == 1) $('#divPersonnelSub').show()
-//		if($('input[type=radio][name=radioPersonnel]:checked').length == 1) $('#divPersonnelSub').show()
-//		if($('input[type=radio][name=radioPersonnel]:checked').length == 1) $('#divPersonnelSub').show()
-//		if($('input[type=radio][name=radioPersonnel]:checked').length == 1) $('#divPersonnelSub').show()
-//		if($('input[type=radio][name=radioPersonnel]:checked').length == 1) $('#divPersonnelSub').show()
-
+		$("[name="+name+"][value="+value+"]").prop('checked', true);
 	}
 	test = $('input[type=radio][name=radioPersonnel]:checked').length
 	alert(test)
