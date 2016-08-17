@@ -143,12 +143,46 @@ function maj_en_cours(o)
 					case "11":
 						name = "radioEtudiant"
 						$('#divEtudiantSub').show()
+				}
+			}
+			if(name == "id_cadre_sub_depl"){
+				switch (value){
+					case "1":
+					case "2":
+					case "3":
+					case "4":
+					case "5":
+					case "6":
+					case "7":
+					default:
+						name = "radioFormation"
+						$('#divFormationSub').show()
+						break; 
+					case "8":
+					case "9":
+					case "10":
+					case "11":
+					case "12":
+						name = "radioRecherche"
+						$('#divRechercheSub').show()
+						break;
+					case "13":
+					case "14":
+					case "15":
+					case "16":
+					case "17":
+						name = "radioAdministration"
+						$('#divAdministrationSub').show()
+				}
+			}
+			if(name == "cadre_depl"){
+				$("[name="+name+"][value="+value+"]").parent().parent().show();
 			}
 		}
 		$("[name="+name+"][value="+value+"]").prop('checked', true);
 	}
-	test = $('input[type=radio][name=radioPersonnel]:checked').length
-	alert(test)
+//	test = $('input[type=radio][name=radioPersonnel]:checked').length
+//	alert(test)
 	
 	
 	var limit = x.text.length;
