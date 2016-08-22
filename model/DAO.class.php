@@ -220,11 +220,11 @@ class DAO {
 		return $res['total'];
 	}
 
-	
-	function getVilleAvion($term){
+	//retourne une châine au format JSON des ville aéroports avion
+	function getVillesAvion($term){
 		try
 		{
-			$requete = $this->conn->prepare("SELECT * FROM villeAvion WHERE nom_ville LIKE :term");
+			$requete = $this->conn->prepare('SELECT * FROM villeAvion WHERE nom_ville LIKE :term');
 			
 			$requete->execute(array('term' => '%'.$term.'%'));
 			
@@ -241,35 +241,50 @@ class DAO {
 			die("PDO Error :".$e->getMessage());
 		}
 	}
-	//teste l'existence de la ville passée en paramètre dans la bdd, l'insère sinon
-//	function insert_ville($ville){
-//		try
-//		{	
-//			
-//			$r = $this->conn->query("
-//			SELECT * FROM villeAvion WHERE nom_ville = '$ville'
-//			" );
-//			var_dump($r);
-//			$result = $r->fetch(PDO::FETCH_ASSOC);
-//			if($result->rowCount() > 0){
-//				return -1;
-//			}
-//			else{
-//				try{
-//					$sql = "INSERT INTO villeAvion (nom_ville) VALUES ('$ville')";
-//					$this->conn->exec($sql);
-//					echo "New record created successfully VILLE.";
-//				}catch(PDOException $e) {
-//					echo $sql ."<br>" . $e->getMessage();
-//				}
-//			}
-//		}
-//		catch (PDOException $e)	{
-//			die("PDO Error :".$e->getMessage());
-//		}
-//	}
+	
+	//retourne une châine au format JSON des ville gare train
+	function getVillesTrain($term){
+		try
+		{
+			$requete = $this->conn->prepare('SELECT * FROM villeTrain WHERE nom_ville LIKE :term');
+			
+			$requete->execute(array('term' => '%'.$term.'%'));
+			
+			$array = array(); // on créé le tableau
 
+			while($donnee = $requete->fetch()) // on effectue une boucle pour obtenir les données
+			{
+				array_push($array, $donnee['nom_ville']); // et on ajoute celles-ci à notre tableau
+			}
+			
+			echo json_encode($array); // il n'y a plus qu'à convertir en JSON
+		}
+		catch (PDOException $e){
+			die("PDO Error :".$e->getMessage());
+		}
+	}
+	
+	//retourne une châine au format JSON des ville gare train
+	function getVillesRoute($term){
+		try
+		{
+			$requete = $this->conn->prepare('SELECT * FROM villeRoute WHERE nom_ville LIKE :term');
+			
+			$requete->execute(array('term' => '%'.$term.'%'));
+			
+			$array = array(); // on créé le tableau
 
+			while($donnee = $requete->fetch()) // on effectue une boucle pour obtenir les données
+			{
+				array_push($array, $donnee['nom_ville']); // et on ajoute celles-ci à notre tableau
+			}
+			
+			echo json_encode($array); // il n'y a plus qu'à convertir en JSON
+		}
+		catch (PDOException $e){
+			die("PDO Error :".$e->getMessage());
+		}
+	}
 	
 	//retourne un tableau comportant les noms de colonnes de la table deplacement
 	//utilisé pour passer ce tableau en paramètre d'une fonction qui insére un déplacement
@@ -310,7 +325,7 @@ class DAO {
 			$stmt->execute();
 
 			$id_depl = $this->conn->lastInsertId();
-			echo "New record created successfully DEPLACEMENT. Last inserted ID DEPLACEMENT is: " . $id_depl;
+			//echo "New record created successfully DEPLACEMENT. Last inserted ID DEPLACEMENT is: " . $id_depl;
 			return $id_depl ;
 		}
 		catch(PDOException $e){
@@ -341,7 +356,7 @@ class DAO {
 
 			$stmt->execute();
 
-			echo $stmt->rowCount() . " records UPDATED successfully";
+			//echo $stmt->rowCount() . " records UPDATED successfully";
 		}
 		catch(PDOException $e){
 			echo "Error: " . $e->getMessage();
@@ -415,25 +430,129 @@ class DAO {
 		}
 		return $res;
 	}
-		
-	function getDistTrain($depart,$destination){
+	
+	function insertVilleRouteIfNotExist($ville1){
+		$ville = addslashes($ville1);
+		$ville = utf8_encode($ville);
 		try
 		{
-			$r = $this->conn->query("
-				SELECT *
-				FROM dist_train
-				WHERE depart='$depart' AND destination='$destination'
-				");
-			$res = $r->fetchAll(PDO::FETCH_CLASS, 'etape_depl');
+			$sql="
+				SELECT id_ville
+				FROM villeRoute
+				WHERE nom_ville='$ville'
+				";
+			$r = $this->conn->query($sql);
+			//echo $sql;
+			$res = $r->fetchAll(PDO::FETCH_COLUMN);
+			if(sizeof($res) == 0){
+				$sql2 = "INSERT INTO villeRoute (nom_ville)
+				VALUES ('$ville')";
+				//echo $sql2;
+				// use exec() because no results are returned
+				$r = $this->conn->exec($sql2);
+				$id_ville = $this->conn->lastInsertId();
+				//echo "New record created successfully: villeRoute";
+				//echo $id_ville;
+				return $id_ville;
+				
+			}
+			return $res;
 		}
 		catch (PDOException $e){
 			die("PDO Error :".$e->getMessage());
 		}
-		return $res;
+	}
+	
+	function insertDistanceRouteIfNotExist($depart,$destination,$distance){
+//		$depart = addslashes($depart1);
+//		$destination = addslashes($destination1);
+
+		try
+		{
+			$r = $this->conn->query("
+				SELECT *
+				FROM villeRoute_dist
+				WHERE depart='$depart'
+				AND destination='$destination'
+				");
+			$res = $r->fetchAll(PDO::FETCH_COLUMN);
+			if(sizeof($res) == 0){
+				$sql = "INSERT INTO villeRoute_dist (depart, destination, distance)
+				VALUES ($depart, $destination,$distance)";
+				// use exec() because no results are returned
+				$r = $this->conn->exec($sql);
+				//echo "New record created successfully: villeRoute_dist";
+			}
+			return $res;
+		}
+		catch (PDOException $e){
+			die("PDO Error :".$e->getMessage());
+		}
 	}
 
+	//récupère 	
+	function getDistance($depart1,$destination1, $mode){
+		$depart = addslashes($depart1);
+		$destination = addslashes($destination1);
 
-
+		$tableVille = '';
+		$tableDistance = '';
+		
+		switch (substr($mode,0,9)) {
+			case 'modeAvion':
+				$tableVille = 'villeAvion';
+				$tableDistance = 'villeAvion_dist';
+				break;
+			case 'modeTrain':
+				$tableVille = 'villeTrain';
+				$tableDistance = 'villeTrain_dist';
+				break;
+			default:
+				$tableVille = 'villeRoute';
+				$tableDistance = 'villeRoute_dist';
+		}
+		try
+		{
+			$sql = "
+				SELECT distance
+				FROM $tableDistance
+				WHERE $tableDistance.depart = ( 
+				SELECT id_ville
+				FROM $tableVille
+				WHERE $tableVille.nom_ville =  '$depart' ) 
+				AND $tableDistance.destination = ( 
+				SELECT id_ville
+				FROM $tableVille
+				WHERE $tableVille.nom_ville =  '$destination' ) 
+				";
+				
+			$r = $this->conn->query($sql);
+			//echo $sql;
+			$res = $r->fetchAll(PDO::FETCH_COLUMN);
+			if(sizeof($res) == 0){
+				$sql = "
+				SELECT distance
+				FROM $tableDistance
+				WHERE $tableDistance.depart = ( 
+				SELECT id_ville
+				FROM $tableVille
+				WHERE $tableVille.nom_ville =  '$destination' ) 
+				AND $tableDistance.destination = ( 
+				SELECT id_ville
+				FROM $tableVille
+				WHERE $tableVille.nom_ville =  '$depart' ) 
+				";
+				$r = $this->conn->query($sql);
+				$res = $r->fetchAll(PDO::FETCH_COLUMN);
+			}
+			if(sizeof($res) == 0){ return -1;}
+			return $res[0];
+		}
+		catch (PDOException $e){
+			die("PDO Error :".$e->getMessage());
+		}
+	}
+	
 
 }
 ?>

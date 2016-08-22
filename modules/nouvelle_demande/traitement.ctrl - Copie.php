@@ -157,9 +157,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			}
 			
 			if(isset($_POST["depart".$nbEtape])) $depart[$nbEtape] = test_input($_POST["depart".$nbEtape]);
-			if(isset($_POST["destination".$nbEtape])) $destination[$nbEtape] = test_input($_POST["destination".$nbEtape]);
-			
-			if(isset($_POST["distance".$nbEtape]))	$distance[$nbEtape] = test_input($_POST["distance".$nbEtape]);
+			if(isset($_POST["destination".$nbEtape])) $destination[$nbEtape] = $_POST["destination".$nbEtape];
+			if(isset($_POST["distance".$nbEtape])) $distance[$nbEtape] = test_input($_POST["distance".$nbEtape]);
 			//on vérifie si la distance calculée comporte la chaine " km"
 			if( $test = substr( ($distance[$nbEtape]) , -3) == " km" ) {
 				//si oui, on supprime la chaine " km" et on caste la valeur en entier
@@ -174,12 +173,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				if($mode[$nbEtape] == "modeVoitPerso") array_push($stackDistVoitPerso,(float)$distance[$nbEtape]);
 			}else{
 				if(!is_numeric($distance[$nbEtape])) $distance[$nbEtape] = 0;
-			}
-			if($mode[$nbEtape] == "modeTaxi" || $mode[$nbEtape] == "modeNavetteCar" ||$mode[$nbEtape] == "modeVoitLoc" || $mode[$nbEtape] == "modeVoitPerso"){
-				echo 
-				$id_ville_depart = $dao->insertVilleRouteIfNotExist($depart[$nbEtape]);
-				$id_ville_destination = $dao->insertVilleRouteIfNotExist($destination[$nbEtape]);
-				$dao->insertDistanceRouteIfNotExist($id_ville_depart,$id_ville_destination,$distance[$nbEtape]);
 			}
 		}
 	}
@@ -216,7 +209,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			$id_user = $dao->ajouterUser($prenom_user, $nom_user);
 		}
 		$tabDepl['id_user'] = $id_user;
-		//pre($tabDepl);
+		pre($tabDepl);
 		//##############################################################################
 		//update  du déplacement
 		$dao->updateDeplacement($tabDepl, $id_depl);
