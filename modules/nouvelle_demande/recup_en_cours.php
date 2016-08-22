@@ -15,6 +15,9 @@ foreach($tabText[0] as $k=>$v){
 	$strJSON .= '{"name":"'.$k.'","value":"'.$v.'"},';
 }
 $strJSON = substr($strJSON, 0, -1);
+
+
+
 $strJSON .= ']}';
 
 echo $strJSON;

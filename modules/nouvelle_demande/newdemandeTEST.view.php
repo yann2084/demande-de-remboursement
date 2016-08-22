@@ -401,7 +401,6 @@ include("../../view/template/menu.view.php");
     <div class="form-group well" style="background-color:lavender;" id="etape" hidden>
         <div class="well well-sm"><span class="glyphicon glyphicon-road"></span><strong>  TRAJETS / MODE DE TRANSPORT</strong></div>
         <div class="alert alert-warning"><strong>Attention!</strong> Ne pas renseigner les étapes de transport intra-urbain (métro, tram, bus...).</div>
-        <div class="alert alert-warning"><strong>Version Beta!</strong> Pour le moment le calcul de distance ne se fait qu'en fonction du mode Voiture, les distance entre aéroport doivent être renseignées à la main</div>
         <fieldset class="no-help form-group">
             <div class="list-number">
                 <ul class="form-list number-list list-group">
@@ -410,26 +409,27 @@ include("../../view/template/menu.view.php");
                         <!-- ###################################################################################################### -->
                         <!--        MODES       -->
                         <!-- ###################################################################################################### -->
-                        <div class="form-group well well-sm">
+                        <div class="form-group well well-sm" nb-etape="1">
                             <label>Choisir le mode approprié<em> *</em></label>
                             <div class="radio">
-                                <label for="modeTrain"><input type="radio" id="modeTrain" value="modeTrain" name="radioMode1" required>Train / R.E.R</label>
+                                <label for="modeTrain1"><input type="radio" id="modeTrain1" onClick="autocompTrain(this)" value="modeTrain" name="radioMode1" required>Train / R.E.R</label>
                             </div>
                             <div class="radio">
-                                <label for="modeAvion"><input type="radio" id="modeAvion" value="modeAvion" name="radioMode1" >Avion</label>
+                                <label for="modeAvion1"><input type="radio" id="modeAvion1" onClick="autocompAvion(this)" value="modeAvion" name="radioMode1" >Avion</label>
                             </div>
                             <div class="radio">
-                                <label for="modeTaxi"><input type="radio" id="modeTaxi" value="modeTaxi" name="radioMode1">Taxi</label>
+                                <label for="modeTaxi1"><input type="radio" id="modeTaxi1" onClick="autocompRoute(this)" value="modeTaxi" name="radioMode1">Taxi</label>
                             </div>
                             <div class="radio">
-                                <label for="modeNavetteCar"><input type="radio" id="modeNavetteCar" value="modeNavetteCar" name="radioMode1">Navette / Car</label>
+                                <label for="modeNavetteCar1"><input type="radio" id="modeNavetteCar1" onClick="autocompRoute(this)" value="modeNavetteCar" name="radioMode1">Navette / Car</label>
                             </div>
                             <div class="radio">
-                                <label for="modeVoitLoc"><input type="radio" id="modeVoitLoc" value="modeVoitLoc" name="radioMode1">Voiture de location</label>
+                                <label for="modeVoitLoc1"><input type="radio" id="modeVoitLoc1" onClick="autocompRoute(this)" value="modeVoitLoc" name="radioMode1">Voiture de location</label>
                             </div>
                             <div class="radio">
-                                <label for="modeVoitPerso"><input type="radio" id="modeVoitPerso" value="modeVoitPerso" name="radioMode1" data-toggle="collapse" data-target="#voitPersoDiv">Voiture personnelle</label>
+                                <label for="modeVoitPerso1"><input type="radio" id="modeVoitPerso1" onClick="autocompRoute(this)" value="modeVoitPerso" name="radioMode1" data-toggle="collapse" data-target="#voitPersoDiv">Voiture personnelle</label>
                             </div>
+                            <button type="button" class="btn btnDisplayRadioValueChecked btn-primary"> DisplayRadioValueChecked</button>
                             <div id="voitPersoDiv" class="collapse">
                                 <label class="sr-only" for="puisFisc1">Puissance fiscale du véhicule</label>
                                 <input type="number" class="form-control" id="puisFisc1" min="0" value="" name="puisFisc1" min="1" max="15" placeholder="Entrez le nombre de CV figurant sur la carte grise">
@@ -447,12 +447,13 @@ include("../../view/template/menu.view.php");
                             <input type="text" class="form-control" id="destination-input1" name="destination1" value="" placeholder="Entrez la ville d'arrivée" required>
                         </div>
                         <div class="form-group">
-                            <button type="button" class="btn btn-info" onClick="calcDist('depart-input1','destination-input1','distance1')"><span class="glyphicon glyphicon-search"></span>  Vérifier distance</button>
+                            <button type="button" class="btn btn-info" nb-etape="1" onClick="calcDistAllMode(this)"><span class="glyphicon glyphicon-search"></span>  Vérifier distance</button>
                             <div id="distDiv1" hidden>
                                 <div class="form-group">
                                     <label class="sr-only" for="distance1">Kilométrage</label>
                                     <input type="text" class="form-control distance" id="distance1" value="" name="distance1" placeholder="">
                                 </div>
+                                <div id="testDistLundi"></div>
                             </div>
                         </div>
 						<div id="occurence" hidden>
@@ -485,12 +486,15 @@ include("../../view/template/menu.view.php");
 
     <div class="form-group" id="groupButton">
         <button type="button" class="btn btn4 btn-primary"><span class="glyphicon glyphicon-arrow-left"></span> PRÉCÉDENT</button>
-        <button type="button" class="btn btnsave btn-warning"><span class="glyphicon glyphicon-repeat"></span> toJson</button>
+<!--        <button type="button" class="btn btnsave btn-warning"><span class="glyphicon glyphicon-repeat"></span> toJson</button>
+
+-->      
+        <button data-toggle="tooltip" data-placement="bottom" title="Vous pourrez compléter votre formulaire ulétrieurement" type="button" class="btn btnRecord btn-danger"><span class="glyphicon glyphicon-time"></span> Enregistrement partiel</button>
         <button type="submit" class="submit btn btn-success" onClick="afficheAll()"><span class="glyphicon glyphicon-ok"></span> Valider pour édition pdf</button>
-        <button type="button" class="btn btnRecord btn-primary"><span class="glyphicon glyphicon-arrow-left"></span> Enregistrer</button>
-        <button type="button" class="btn btnFormJSON btn-primary"><span class="glyphicon glyphicon-arrow-left"></span> Create Form JSON</button>
         
-    </div>
+        <!--<button type="button" class="btn btnFormJSON btn-primary"><span class="glyphicon glyphicon-arrow-left"></span> Create Form JSON</button>-->
+<!--        <input type="text" id="ghost" hidden>
+-->    </div>
 </div>
 
     </form>

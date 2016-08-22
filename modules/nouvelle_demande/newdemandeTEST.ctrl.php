@@ -37,24 +37,25 @@ if($authOK){
 			
 			$tabRadio = $dao->getRadioValuesDepl($_POST['id_depl']);
 			$tabText = $dao->getTextValuesDepl($_POST['id_depl']);
-			pre($tabRadio);
-			pre($tabText);
-			$strJSON = '{"radio":[';
-			foreach($tabRadio[0] as $k=>$v){
-				$strJSON .= '{"name":"'.$k.'","value":"'.$v.'"},';
-			}
-			$strJSON = substr($strJSON, 0, -1);
-			$strJSON .= '],"text":[';
-			foreach($tabText[0] as $k=>$v){
-				$strJSON .= '{"name":"'.$k.'","value":"'.$v.'"},';
-			}
-			$strJSON = substr($strJSON, 0, -1);
-			$strJSON .= ']}';
-			
-			echo $strJSON;
+//			pre($tabRadio);
+//			pre($tabText);
+//			$strJSON = '{"radio":[';
+//			foreach($tabRadio[0] as $k=>$v){
+//				$strJSON .= '{"name":"'.$k.'","value":"'.$v.'"},';
+//			}
+//			$strJSON = substr($strJSON, 0, -1);
+//			$strJSON .= '],"text":[';
+//			foreach($tabText[0] as $k=>$v){
+//				$strJSON .= '{"name":"'.$k.'","value":"'.$v.'"},';
+//			}
+//			$strJSON = substr($strJSON, 0, -1);
+//			$strJSON .= ']}';
+//			
+//			echo $strJSON;
 			
 			
 			$mode = "old";
+
 			
 		}
 		
